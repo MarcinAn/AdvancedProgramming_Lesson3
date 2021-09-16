@@ -3,14 +3,6 @@ let ksiazka = null;
 function getCount(data) {
     const el = $("#counter");
     let title = "title";
-    if (data) {
-        if (data > 1) {
-            ksiazka = "ksiazka";
-        }
-        //el.text(data + " " + title);
-    } else {
-        //el.text("No " + title);
-    }
 }
 $(document).ready(function () {
     getData();
@@ -50,12 +42,11 @@ function getData() {
 function addItem() {
     const item = {
         title: $("#add-title").val(),
-        isComplete: false
     };
     $.ajax({
         type: "POST",
         accepts: "application/json",
-        url: uri,
+        url: uri + '/CreateKsiazkaItem',
         contentType: "application/json",
         data: JSON.stringify(item),
         error: function (jqXHR, textStatus, errorThrown) {
@@ -67,6 +58,7 @@ function addItem() {
         }
     });
 }
+
 function deleteItem(id) {
     $.ajax({
         url: uri + "/" + id,
@@ -76,6 +68,7 @@ function deleteItem(id) {
         }
     });
 }
+
 function editItem(id) {
     $.each(ksiazka, function (key, item) {
         if (item.id === id) {
@@ -85,24 +78,29 @@ function editItem(id) {
     });
     $("#spoiler").css({ display: "block" });
 }
-$(".my-form").on("submit", function () {
+
+function updateItem() {
+    var id = parseInt($("#edit-id").val(), 10);
     const item = {
+        id: id,
         title: $("#edit-title").val(),
-        id: $("#edit-id").val()
     };
     $.ajax({
-        url: uri + "/" + $("#edit-id").val(),
-        type: "PUT",
+        type: "POST",
         accepts: "application/json",
+        url: uri + '/UpdateKsiazkaItem',
         contentType: "application/json",
         data: JSON.stringify(item),
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert("Something went wrong!");
+        },
         success: function (result) {
             getData();
+            closeInput();
         }
     });
-    closeInput();
-    return false;
-});
+}
+
 function closeInput() {
     $("#spoiler").css({ display: "none" });
 }

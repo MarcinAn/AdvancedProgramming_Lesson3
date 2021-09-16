@@ -22,67 +22,67 @@ namespace AdvancedProgramming_Lesson3.Controllers
 
         // GET: api/KsiazkaItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<KsiazkaItem>>> GetksiazkaItems()
+        public async Task<ActionResult<IEnumerable<KsiazkaItemDTO>>> GetKsiazkaItems()
         {
-            return await _context.ksiazkaItems.ToListAsync();
+            return await _context.ksiazkaItems
+                .Select(x => ItemToDTO(x))
+                .ToListAsync();
         }
 
         // GET: api/KsiazkaItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<KsiazkaItem>> GetKsiazkaItem(long id)
+        public async Task<ActionResult<KsiazkaItemDTO>> GetKsiazkaItem(long id)
         {
             var ksiazkaItem = await _context.ksiazkaItems.FindAsync(id);
-
             if (ksiazkaItem == null)
             {
                 return NotFound();
             }
 
-            return ksiazkaItem;
+            return ItemToDTO(ksiazkaItem);
         }
 
-        // PUT: api/KsiazkaItems/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutKsiazkaItem(long id, KsiazkaItem ksiazkaItem)
+        [HttpPost]
+        [Route("UpdateKsiazkaItem")]
+        public async Task<ActionResult<KsiazkaItemDTO>> UpdateKsiazkaItem(KsiazkaItemDTO ksiazkaItemDTO)
         {
-            if (id != ksiazkaItem.Id)
+            var ksiazkaItem = await _context.ksiazkaItems.FindAsync(ksiazkaItemDTO.Id);
+            if (ksiazkaItem == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-
-            _context.Entry(ksiazkaItem).State = EntityState.Modified;
-
+            ksiazkaItem.Title = ksiazkaItemDTO.Title;
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException) when (!KsiazkaItemExists(ksiazkaItemDTO.Id))
             {
-                if (!KsiazkaItemExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
-            return NoContent();
+            return CreatedAtAction(
+                nameof(UpdateKsiazkaItem),
+                new { id = ksiazkaItem.Id },
+                ItemToDTO(ksiazkaItem));
         }
 
-        // POST: api/KsiazkaItems
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<KsiazkaItem>> PostKsiazkaItem(KsiazkaItem ksiazkaItem)
+        [Route("CreateKsiazkaItem")]
+        public async Task<ActionResult<KsiazkaItemDTO>> CreateKsiazkaItem(KsiazkaItemDTO ksiazkaItemDTO)
         {
+            var ksiazkaItem = new KsiazkaItem
+            {
+                Title = ksiazkaItemDTO.Title,
+            };
+
             _context.ksiazkaItems.Add(ksiazkaItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetKsiazkaItem", new { id = ksiazkaItem.Id }, ksiazkaItem);
+            return CreatedAtAction(
+                nameof(GetKsiazkaItem),
+                new { id = ksiazkaItem.Id },
+                ItemToDTO(ksiazkaItem));
         }
 
         // DELETE: api/KsiazkaItems/5
@@ -94,16 +94,20 @@ namespace AdvancedProgramming_Lesson3.Controllers
             {
                 return NotFound();
             }
-
             _context.ksiazkaItems.Remove(ksiazkaItem);
             await _context.SaveChangesAsync();
-
-            return ksiazkaItem;
+            return NoContent();
         }
 
-        private bool KsiazkaItemExists(long id)
-        {
-            return _context.ksiazkaItems.Any(e => e.Id == id);
-        }
+
+        private bool KsiazkaItemExists(long id) =>
+            _context.ksiazkaItems.Any(e => e.Id == id);
+
+        private static KsiazkaItemDTO ItemToDTO(KsiazkaItem ksiazkaItem) =>
+            new KsiazkaItemDTO
+            {
+                Id = ksiazkaItem.Id,
+                Title = ksiazkaItem.Title,
+            };
     }
 }
