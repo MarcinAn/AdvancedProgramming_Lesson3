@@ -10,9 +10,9 @@ function getCount(data) {
             name = "name";
             lastname = "lastname";
         }
-        el.text(data + " " + name + " " + lastname);
+        //el.text(data + " " + name + " " + lastname);
     } else {
-        el.text("No " + name + lastname);
+        //el.text("No " + name + lastname);
     }
 }
 $(document).ready(function () {
@@ -86,7 +86,7 @@ function editItem(id) {
         if (item.id === id) {
             $("#edit-name").val(item.name);
             $("#edit-id").val(item.id);
-            $("#edit-lastname").val(item.lastname);
+            $("#edit-lastname").val(item.lastName);
         }
     });
     $("#spoiler").css({ display: "block" });
@@ -94,7 +94,7 @@ function editItem(id) {
 $(".my-form").on("submit", function () {
     const item = {
         name: $("#edit-name").val(),
-        lastname: $("#edit-lastname").val(),
+        lastName: $("#edit-lastname").val(),
         id: $("#edit-id").val()
     };
     $.ajax({

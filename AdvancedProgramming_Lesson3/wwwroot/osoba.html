@@ -12,18 +12,22 @@
             display: none;
         }
 
-        table {
+        .OryginalTable {
             font-family: Arial, sans-serif;
             border: 1px solid;
             border-collapse: collapse;
         }
 
-        th {
+        .OryginalTh {
             background-color: #0066CC;
             color: white;
         }
 
-        td {
+        .MyTd{
+            border: 0px;
+        }
+
+        Td {
             border: 1px solid;
             padding: 5px;
         }
@@ -31,11 +35,21 @@
 </head>
 <body>
     <h1>Osoba</h1>
-    <h3>Add</h3>
+    <h3 style="color:red">Tutaj pojawi się lista imion i nazwisk</h3>
     <form action="javascript:void(0);" method="POST" onsubmit="addItem()">
-        <input type="text" id="add-name" placeholder="New name">
-        <input type="text" id="add-lastname" placeholder="New lastname">
-        <input type="submit" value="Add">
+        <table style="border-block-color:white">
+            <tr>
+                <td class="MyTd">Podaj imię:</td>
+                <td class="MyTd"><input type="text" id="add-name"></td>
+            </tr>
+            <tr>
+                <td class="MyTd">Podaj nazwisko: </td>
+                <td class="MyTd">
+                    <input type="text" id="add-lastname">
+                    <input type="submit" value="Wyślij">
+                </td>
+            </tr>
+        </table>
     </form>
     <div id="spoiler">
         <h3>Edit</h3>
@@ -48,12 +62,14 @@
         </form>
     </div>
     <p id="counter"></p>
-    <table>
+    <table class="OryginalTable">
         <tr>
-            <th>Name</th>
-            <th>LastName</th>
-            <th></th>
-            <th></th>
+            <th class="OryginalTh">Pozycja</th>
+            <th class="OryginalTh">Imie</th>
+            <th class="OryginalTh">Nazwisko</th>
+            <th class="OryginalTh"></th>
+            <th class="OryginalTh"></th>
+            <th class="OryginalTh"></th>
         </tr>
         <tbody id="osoba"></tbody>
     </table>
