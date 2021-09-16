@@ -22,67 +22,69 @@ namespace AdvancedProgramming_Lesson3.Controllers
 
         // GET: api/OsobaItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OsobaItem>>> GetosobaItems()
+        public async Task<ActionResult<IEnumerable<OsobaItemDTO>>> GetOsobaItems()
         {
-            return await _context.osobaItems.ToListAsync();
+            return await _context.osobaItems
+                .Select(x => ItemToDTO(x))
+                .ToListAsync();
         }
 
         // GET: api/OsobaItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<OsobaItem>> GetOsobaItem(long id)
+        public async Task<ActionResult<OsobaItemDTO>> GetOsobaItem(long id)
         {
             var osobaItem = await _context.osobaItems.FindAsync(id);
-
             if (osobaItem == null)
             {
                 return NotFound();
             }
 
-            return osobaItem;
+            return ItemToDTO(osobaItem);
         }
 
-        // PUT: api/OsobaItems/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutOsobaItem(long id, OsobaItem osobaItem)
+        [HttpPost]
+        [Route("UpdateOsobaItem")]
+        public async Task<ActionResult<OsobaItemDTO>> UpdateOsobaItem(OsobaItemDTO osobaItemDTO)
         {
-            if (id != osobaItem.Id)
+            var osobaItem = await _context.osobaItems.FindAsync(osobaItemDTO.Id);
+            if (osobaItem == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-
-            _context.Entry(osobaItem).State = EntityState.Modified;
-
+            osobaItem.Name = osobaItemDTO.Name;
+            osobaItem.LastName = osobaItemDTO.LastName;
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException) when (!OsobaItemExists(osobaItemDTO.Id))
             {
-                if (!OsobaItemExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
-            return NoContent();
+            return CreatedAtAction(
+                nameof(UpdateOsobaItem),
+                new { id = osobaItem.Id },
+                ItemToDTO(osobaItem));
         }
 
-        // POST: api/OsobaItems
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<OsobaItem>> PostOsobaItem(OsobaItem osobaItem)
+        [Route("CreateOsobaItem")]
+        public async Task<ActionResult<OsobaItemDTO>> CreateOsobaItem(OsobaItemDTO osobaItemDTO)
         {
+            var osobaItem = new OsobaItem
+            {
+                LastName = osobaItemDTO.LastName,
+                Name = osobaItemDTO.Name
+            };
+
             _context.osobaItems.Add(osobaItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetOsobaItem", new { id = osobaItem.Id }, osobaItem);
+            return CreatedAtAction(
+                nameof(GetOsobaItem),
+                new { id = osobaItem.Id },
+                ItemToDTO(osobaItem));
         }
 
         // DELETE: api/OsobaItems/5
@@ -94,16 +96,21 @@ namespace AdvancedProgramming_Lesson3.Controllers
             {
                 return NotFound();
             }
-
             _context.osobaItems.Remove(osobaItem);
             await _context.SaveChangesAsync();
-
-            return osobaItem;
+            return NoContent();
         }
 
-        private bool OsobaItemExists(long id)
-        {
-            return _context.osobaItems.Any(e => e.Id == id);
-        }
+
+        private bool OsobaItemExists(long id) =>
+            _context.osobaItems.Any(e => e.Id == id);
+
+        private static OsobaItemDTO ItemToDTO(OsobaItem osobaItem) =>
+            new OsobaItemDTO
+            {
+                Id = osobaItem.Id,
+                Name = osobaItem.Name,
+                LastName = osobaItem.LastName
+            };
     }
 }
