@@ -27,6 +27,8 @@ namespace AdvancedProgramming_Lesson3
         {
             services.AddDbContext<OsobaContext>(opt =>
                 opt.UseInMemoryDatabase("OsobaList"));
+            services.AddDbContext<KsiazkaContext>(opt =>
+                opt.UseInMemoryDatabase("KsiazkaList"));
             services.AddControllersWithViews();
         }
 
@@ -54,7 +56,7 @@ namespace AdvancedProgramming_Lesson3
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=home}/{action=Index}/{id?}");
             });
         }
     }
