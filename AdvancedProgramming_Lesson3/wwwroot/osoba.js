@@ -29,18 +29,19 @@ function getData() {
             getCount(data.length);
             $.each(data, function (key, item) {
                 const tr = $("<tr></tr>")
+                    .append($("<td></td>").text("Pozycja " + item.id + ":"))
                     .append($("<td></td>").text(item.name))
                     .append($("<td></td>").text(item.lastName))
                     .append(
                         $("<td></td>").append(
-                            $("<button>Edit</button>").on("click", function () {
+                            $("<button>Edycja</button>").on("click", function () {
                                 editItem(item.id);
                             })
                         )
                     )
                     .append(
                         $("<td></td>").append(
-                            $("<button>Delete</button>").on("click", function () {
+                            $("<button>Usuń</button>").on("click", function () {
                                 deleteItem(item.id);
                             })
                         )

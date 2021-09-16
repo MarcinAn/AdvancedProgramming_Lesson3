@@ -28,14 +28,12 @@
         }
 
         Td {
-            border: 1px solid;
             padding: 5px;
         }
     </style>
 </head>
 <body>
     <h1>Osoba</h1>
-    <h3 style="color:red">Tutaj pojawi się lista imion i nazwisk</h3>
     <form action="javascript:void(0);" method="POST" onsubmit="addItem()">
         <table style="border-block-color:white">
             <tr>
@@ -50,6 +48,7 @@
                 </td>
             </tr>
         </table>
+        <h3 style="color:red">Tutaj pojawi się lista imion i nazwisk</h3>
     </form>
     <div id="spoiler">
         <h3>Edit</h3>
@@ -57,20 +56,12 @@
             <input type="hidden" id="edit-id">
             <input type="text" id="edit-name">
             <input type="text" id="edit-lastname">
-            <input type="submit" value="Save">
-            <a onclick="closeInput()" aria-label="Close">&#10006;</a>
+            <input type="submit" value="Zapisz">
+            <a onclick="closeInput()" aria-label="Zamknij">&#10006;</a>
         </form>
     </div>
     <p id="counter"></p>
-    <table class="OryginalTable">
-        <tr>
-            <th class="OryginalTh">Pozycja</th>
-            <th class="OryginalTh">Imie</th>
-            <th class="OryginalTh">Nazwisko</th>
-            <th class="OryginalTh"></th>
-            <th class="OryginalTh"></th>
-            <th class="OryginalTh"></th>
-        </tr>
+    <table border="0">
         <tbody id="osoba"></tbody>
     </table>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
